@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PausaMente | Ejercicios cognitivos</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #eef4ff, #e0f7f1);
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 760px;
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 56px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin: 0 0 12px;
+            color: #173b66;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #526176;
+            margin: 0 auto 36px;
+            max-width: 520px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px 22px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(30, 41, 59, 0.08);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 30px rgba(30, 41, 59, 0.13);
+            border-color: #93c5fd;
+        }
+
+        .card-icon {
+            font-size: 44px;
+            margin-bottom: 16px;
+        }
+
+        .card h2 {
+            margin: 0 0 12px;
+            font-size: 1.4rem;
+        }
+
+        .card p {
+            color: #64748b;
+            line-height: 1.5;
+            margin: 0 0 22px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 22px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            background: #2563eb;
+        }
+
+        .colors .button {
+            background: #0f9d83;
+        }
+
+        footer {
+            margin-top: 36px;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 540px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 24px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <div class="icon" aria-hidden="true">🧠</div>
+
+        <h1>PausaMente</h1>
+
+        <p class="description">
+            Entrena tu atención, controla tus impulsos y aprende a
+            pensar antes de actuar con estos ejercicios interactivos.
+        </p>
+
+        <nav class="cards" aria-label="Seleccionar ejercicio">
+            <a class="card actions" href="acciones.html">
+                <div class="card-icon" aria-hidden="true">⚡</div>
+                <h2>Acciones</h2>
+                <p>
+                    Pon a prueba tu capacidad para detener respuestas
+                    automáticas y seguir instrucciones.
+                </p>
+                <span class="button">Iniciar ejercicio</span>
+            </a>
+
+            <a class="card colors" href="colores.html">
+                <div class="card-icon" aria-hidden="true">🎨</div>
+                <h2>Colores</h2>
+                <p>
+                    Desafía tu concentración y tu control inhibitorio
+                    con palabras y colores.
+                </p>
+                <span class="button">Iniciar ejercicio</span>
+            </a>
+        </nav>
+
+        <footer>
+            Un momento para detenerte, pensar y elegir.
+        </footer>
+    </main>
+</body>
+</html>
