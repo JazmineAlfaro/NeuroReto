@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Juego de palabras con texto de color aleatorio</title>
+
+    <style>
+        :root {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #172033;
+            background: #f5f7fb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app {
+            width: min(760px, 100%);
+            background: white;
+            border-radius: 24px;
+            padding: clamp(18px, 4vw, 34px);
+            box-shadow: 0 12px 40px #17203318;
+        }
+
+        .top {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(1.45rem, 4vw, 2rem);
+            margin: 0 0 8px;
+        }
+
+        .sub {
+            color: #5b6475;
+            margin: 0 0 24px;
+        }
+
+        .display {
+            height: clamp(230px, 42vh, 340px);
+            border: 3px solid #e6e9ef;
+            background: #ffffff;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 22px;
+            padding: 20px;
+        }
+
+        .word {
+            font-size: clamp(2.5rem, 10vw, 5.5rem);
+            font-weight: 900;
+            letter-spacing: 0.025em;
+            overflow-wrap: anywhere;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .primary {
+            background: #2459d3;
+            color: white;
+            flex: 1;
+        }
+
+        .secondary {
+            background: #e9eef8;
+            color: #20304f;
+        }
+
+        .btn:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 3px solid #f59e0b;
+            outline-offset: 3px;
+        }
+
+        .settings {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid #e6e9ef;
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 0.98rem;
+        }
+
+        .toggle input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .speed {
+            color: #5b6475;
+            font-size: 0.92rem;
+        }
+
+        .hint {
+            text-align: center;
+            color: #697386;
+            font-size: 0.9rem;
+            margin: 17px 0 0;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="app">
+        <header class="top">
+            <h1>Palabras y colores</h1>
+
+            <p class="sub">
+                Lee en voz alta la palabra. El color de las letras
+                será aleatorio y puede no coincidir con lo que dice.
+            </p>
+        </header>
+
+        <section
+            id="display"
+            class="display"
+            aria-live="polite"
+        >
+            <div id="word" class="word">¡EMPEZAMOS!</div>
+        </section>
+
+        <div class="controls">
+            <button id="next" class="btn primary">
+                Siguiente
+            </button>
+
+            <button id="repeat" class="btn secondary">
+                Repetir pantalla
+            </button>
+        </div>
+
+        <div class="settings">
+            <label class="toggle">
+                <input type="checkbox" id="auto">
+                Avance automático
+            </label>
+
+            <span class="speed">
+                Pausa:
+                <select id="delay" aria-label="Pausa entre pantallas">
+                    <option value="500">0.5 segundos</option>
+                    <option value="1000">1 segundo</option>
+					 <option value="1500">1.5 segundos</option>
+                    <option value="2000">2 segundos</option>
+                    <option value="3000" selected>3 segundos</option>
+                    <option value="5000">5 segundos</option>
+                    <option value="7000">7 segundos</option>
+                </select>
+            </span>
+        </div>
+
+        <p class="hint">
+            No hay voz automática. La palabra y el color de las
+            letras se eligen por separado.
+        </p>
+    </main>
+
+    <script>
+        const colors = [
+            {
+                name: 'AMARILLO',
+                hex: '#FACC15',
+                ink: '#332500'
+            },
+            {
+                name: 'VERDE',
+                hex: '#22C55E',
+                ink: '#052E16'
+            },
+            {
+                name: 'AZUL',
+                hex: '#3B82F6',
+                ink: '#1D4ED8'
+            },
+            {
+                name: 'ROJO',
+                hex: '#EF4444',
+                ink: '#DC2626'
+            },
+            {
+                name: 'MORADO',
+                hex: '#A855F7',
+                ink: '#9333EA'
+            },
+            {
+                name: 'NARANJA',
+                hex: '#F97316',
+                ink: '#EA580C'
+            }
+        ];
+
+        const display = document.getElementById('display');
+        const word = document.getElementById('word');
+        const auto = document.getElementById('auto');
+        const delay = document.getElementById('delay');
+        const nextButton = document.getElementById('next');
+        const repeatButton = document.getElementById('repeat');
+
+        let currentWord = null;
+        let currentInk = null;
+        let timer = null;
+
+        function pickDifferent(arr, currentName) {
+            const available = arr.filter(
+                color => color.name !== currentName
+            );
+
+            return available[
+                Math.floor(Math.random() * available.length)
+            ];
+        }
+
+        function showNext() {
+            const selectedWord = pickDifferent(
+                colors,
+                currentWord?.name
+            );
+
+            const selectedInk = pickDifferent(
+                colors,
+                currentInk?.name
+            );
+
+            currentWord = selectedWord;
+            currentInk = selectedInk;
+
+            word.textContent = selectedWord.name;
+            word.style.color = selectedInk.hex;
+            display.style.background = '#ffffff';
+        }
+
+        function schedule() {
+            clearTimeout(timer);
+
+            if (auto.checked) {
+                timer = setTimeout(() => {
+                    showNext();
+                    schedule();
+                }, Number(delay.value));
+            }
+        }
+
+        nextButton.addEventListener('click', () => {
+            showNext();
+            schedule();
+        });
+
+        repeatButton.addEventListener('click', () => {
+            if (!currentWord) {
+                showNext();
+            } else {
+                word.textContent = currentWord.name;
+                word.style.color = currentInk.hex;
+                display.style.background = '#ffffff';
+            }
+
+            schedule();
+        });
+
+        auto.addEventListener('change', () => {
+            if (auto.checked) {
+                if (!currentWord) {
+                    showNext();
+                }
+
+                schedule();
+            } else {
+                clearTimeout(timer);
+            }
+        });
+
+        delay.addEventListener('change', schedule);
+    </script>
+</body>
+</html>
